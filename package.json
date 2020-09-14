@@ -1,0 +1,9 @@
+{
+  "scripts": {
+    "start": "live-server front --port=8000",
+    "dev": "nodemon server/server.js"
+  },
+  "dependencies": {
+    "socket.io": "^2.3.0"
+  }
+}
