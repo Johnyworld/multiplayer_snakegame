@@ -24,7 +24,7 @@ function init() {
 }
 
 function keydown(e) {
-  console.log(e.keyCode);
+  socket.emit('keydown', e.keyCode);
 }
 
 init();
@@ -60,5 +60,3 @@ function handleGameState(gameState) {
   gameState = JSON.parse(gameState);
   requestAnimationFrame(() => paintGame(gameState));
 }
-
-paintGame(gameState);
