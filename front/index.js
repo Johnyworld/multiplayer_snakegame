@@ -8,22 +8,18 @@ socket.on('init', handleInit);
 socket.on('gameState', handleGameState);
 socket.on('gameOver', handleGameOver);
 socket.on('gameCode', handleGameCode);
-socket.on('unknownGame', handleUnknownGame);
+socket.on('unknownCode', handleUnknownCode);
 socket.on('tooManyPlayers', handleTooManyPlayers);
 
 const gameScreen = document.getElementById('gameScreen');
 const initialScreen = document.getElementById('initialScreen');
 const newGameBtn = document.getElementById('newGameButton');
-const joinGameBtn = document.getElementById('joinGameBtn');
+const joinGameBtn = document.getElementById('joinGameButton');
 const gameCodeInput = document.getElementById('gameCodeInput');
 const gameCodeDisplay = document.getElementById('gameCodeDisplay');
 
 newGameBtn.addEventListener('click', newGame);
 joinGameBtn.addEventListener('click', joinGame);
-
-let canvas, ctx;
-let playerNumber;
-let gameActive = false;
 
 function newGame() {
   socket.emit('newGame');
@@ -35,6 +31,10 @@ function joinGame() {
   socket.emit('joinGame', code);
   init();
 }
+
+let canvas, ctx;
+let playerNumber;
+let gameActive = false;
 
 function init() {
   initialScreen.style.display = 'none';
@@ -55,8 +55,6 @@ function keydown(e) {
   socket.emit('keydown', e.keyCode);
 }
 
-init();
-
 function paintGame(state) {
   ctx.fillStyle = BG_COLOR;
   ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -75,7 +73,7 @@ function paintGame(state) {
 function paintPlayer(playerState, size, color) {
   const snake = playerState.snake;
 
-  ctx.fillStyle = SNAKE_COLOR;
+  ctx.fillStyle = color;
   for (let cell of snake) {
     ctx.fillRect(cell.x * size, cell.y * size, size, size);
   }
@@ -83,7 +81,6 @@ function paintPlayer(playerState, size, color) {
 
 function handleInit(number) {
   playerNumber = number;
-  console.log(msg);
 }
 
 function handleGameState(gameState) {
@@ -100,20 +97,20 @@ function handleGameOver(data) {
   }
   data = JSON.parse(data);
 
+  gameActive = false;
+
   if (data.winner === playerNumber) {
     alert('You win!');
   } else {
     alert('You lose.');
   }
-
-  gameActive = false;
 }
 
 function handleGameCode(gameCode) {
   gameCodeDisplay.innerText = gameCode;
 }
 
-function handleUnknownGame() {
+function handleUnknownCode() {
   reset();
   alert('Unknown game code');
 }
@@ -126,7 +123,6 @@ function handleTooManyPlayers() {
 function reset() {
   playerNumber = null;
   gameCodeInput.value = '';
-  gameCodeDisplay.innerText = '';
   initialScreen.style.display = 'block';
   gameScreen.style.display = 'none';
 }
