@@ -6,12 +6,36 @@ const socket = io('http://localhost:7000');
 
 socket.on('init', handleInit);
 socket.on('gameState', handleGameState);
+socket.on('gameOver', handleGameOver);
+socket.on('gameCode', handleGameCode);
 
 const gameScreen = document.getElementById('gameScreen');
+const initialScreen = document.getElementById('initialScreen');
+const newGameBtn = document.getElementById('newGameButton');
+const joinGameBtn = document.getElementById('joinGameBtn');
+const gameCodeInput = document.getElementById('gameCodeInput');
+const gameCodeDisplay = document.getElementById('gameCodeDisplay');
+
+newGameBtn.addEventListener('click', newGame);
+joinGameBtn.addEventListener('click', joinGame);
+
+function newGame() {
+  socket.emit('newGame');
+  init();
+}
+
+function joinGame() {
+  const code = gameCodeInput.value;
+  socket.emit('joinGame', code);
+  init();
+}
 
 let canvas, ctx;
+let playerNumber;
 
 function init() {
+  initialScreen.style.display = 'none';
+  gameScreen.style.display = 'block';
   canvas = document.getElementById('canvas');
   ctx = canvas.getContext('2d');
 
@@ -52,11 +76,20 @@ function paintPlayer(playerState, size, color) {
   }
 }
 
-function handleInit(msg) {
+function handleInit(number) {
+  playerNumber = number;
   console.log(msg);
 }
 
 function handleGameState(gameState) {
   gameState = JSON.parse(gameState);
   requestAnimationFrame(() => paintGame(gameState));
+}
+
+function handleGameOver(gameState) {
+  alert('You lose!');
+}
+
+function handleGameCode(gameCode) {
+  gameCodeDisplay.innerText = gameCode;
 }
